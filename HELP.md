@@ -4,6 +4,23 @@ To be used with image igorpavlyushchik/posts-application:1.0.0, nothing to be do
 for info:
 docker build -t igorpavlyushchik/users-application:1.0.0 ./
 docker push igorpavlyushchik/users-application:1.0.0
+
+To run locally only this service with k8s:
+from k8s folder run to start/delete:
+kubectl apply -f manifest.yaml
+kubectl delete -f manifest.yaml
+
+to check:
+kubectl get all -n=k8s-program
+kubectl describe service usersapp -n=k8s-program
+
+to test:
+GET: localhost:32315/greeting
+POST: localhost:32315/users
+{
+"userName": "some-username k8s 3"
+}
+GET: http://localhost:32315/users/1
 ### Reference Documentation
 For further reference, please consider the following sections:
 

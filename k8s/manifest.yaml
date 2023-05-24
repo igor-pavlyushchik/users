@@ -6,6 +6,18 @@ items:
     metadata:
       name: k8s-program
   - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      namespace: k8s-program
+      name: task-pv-claim
+    spec:
+      storageClassName: manual
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 3Gi
+  - apiVersion: v1
     kind: Service
     metadata:
       name: usersdb
@@ -76,13 +88,17 @@ items:
       selector:
         matchLabels:
           app: usersapp-pod
-      replicas: 2
+      replicas: 1
       template:
         metadata:
           labels:
             app: usersapp-pod
             owner: igorpavlyushchik
         spec:
+          volumes:
+            - name: task-pv-storage
+              persistentVolumeClaim:
+                claimName: task-pv-claim
           containers:
             - name: usersapp-container
               image: igorpavlyushchik/users-application:1.0.0
@@ -95,3 +111,6 @@ items:
                   value: "admin"
                 - name: DB_PASSWORD
                   value: "admin1234"
+              volumeMounts:
+                - mountPath: "/var"
+                  name: task-pv-storage

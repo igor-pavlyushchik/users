@@ -5,10 +5,31 @@ for info:
 docker build -t igorpavlyushchik/users-application:1.0.0 ./
 docker push igorpavlyushchik/users-application:1.0.0
 
-To run locally only this service with k8s:
-from k8s folder run to start/delete:
+For sub-task 3: Persistent volumes
+
+Create a directory with the file index.html in the node.
+kubectl get nodes
+kubectl debug node/docker-desktop -it --image=ubuntu //connect from debug node to shared folder in the node
+cd host
+mkdir /mnt/data
+sh -c "echo 'Hello from Kubernetes storage' > /mnt/data/index.html"
+
+kubectl apply -f pv-volume.yaml
 kubectl apply -f manifest.yaml
+
+kubectl get all -n=k8s-program
+# get a shell to the container running in the pod
+kubectl exec -n=k8s-program -it pod/usersapp-pod-84c4cbcf4-rq7bc -- /bin/bash
+cd var
+cat index.html
+
+The if we delete the pod or delete the both manifests and apply them again we still can see the files,
+and we can create/delete files both from node and from the shell to the pods created with the given pv and pvc.
+
+
+
 kubectl delete -f manifest.yaml
+kubectl delete -f pv-volume.yaml
 
 to check:
 kubectl get all -n=k8s-program

@@ -72,7 +72,7 @@ items:
                 - configMapRef:
                     name: db-secret-credentials
               volumeMounts:
-                - mountPath: "/var"
+                - mountPath: "/var/lib/postgresql/data"
                   name: pvc-users-storage
 # it's needed when there is no PVC defined.
       volumeClaimTemplates:

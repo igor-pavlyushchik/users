@@ -1,11 +1,17 @@
 # Getting Started
 To be used with image igorpavlyushchik/posts-application:1.0.0, nothing to be done here to start.
 
-for info:
+# To play with the users service without posts service:
+kubectl apply -f manifest.yaml
+and make some API calls from below
+kubectl delete -f manifest.yaml
+
+# For info:
 docker build -t igorpavlyushchik/users-application:1.0.0 ./
 docker push igorpavlyushchik/users-application:1.0.0
 
-For sub-task 3: Persistent volumes
+Comment for sub-task 3: Persistent volumes
+checkout branch module2_k8s_st3
 
 Create a directory with the file index.html in the node.
 kubectl get nodes
@@ -23,7 +29,7 @@ kubectl exec -n=k8s-program -it pod/usersapp-pod-84c4cbcf4-rq7bc -- /bin/bash
 cd var
 cat index.html
 
-The if we delete the pod or delete the both manifests and apply them again we still can see the files,
+Then if we delete the pod or delete the both manifests and apply them again we still can see the files,
 and we can create/delete files both from node and from the shell to the pods created with the given pv and pvc.
 
 

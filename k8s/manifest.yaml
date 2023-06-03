@@ -42,6 +42,17 @@ items:
       POSTGRES_USER: "admin"
       # Db password
       POSTGRES_PASSWORD: "admin1234"
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: users-db-secret
+      namespace: k8s-program
+      labels:
+        app: usersdb-pod
+    data:
+      POSTGRES_DB: dXNlcnM=
+      POSTGRES_USER: YWRtaW4=
+      POSTGRES_PASSWORD: YWRtaW4xMjM0
   - apiVersion: apps/v1
     kind: StatefulSet
     metadata:
@@ -69,8 +80,8 @@ items:
               ports:
               - containerPort: 5432
               envFrom:
-                - configMapRef:
-                    name: db-secret-credentials
+                - secretRef:
+                    name: users-db-secret
               volumeMounts:
                 - mountPath: "/var/lib/postgresql/data"
                   name: pvc-users-storage
@@ -99,6 +110,17 @@ items:
           port: 8081
           targetPort: 8081
           nodePort: 32315
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: users-app-configmap
+      namespace: k8s-program
+      labels:
+        app: usersapp-pod
+    data:
+      DB_URL: "jdbc:postgresql://usersdb:5432/users"
+      DB_USERNAME: "admin"
+      DB_PASSWORD: "admin1234"
   - apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -120,10 +142,6 @@ items:
               image: igorpavlyushchik/users-application:1.0.0
               ports:
                 - containerPort: 8081
-              env:
-                - name: DB_URL
-                  value: "jdbc:postgresql://usersdb:5432/users"
-                - name: DB_USERNAME
-                  value: "admin"
-                - name: DB_PASSWORD
-                  value: "admin1234"
+              envFrom:
+                - configMapRef:
+                    name: users-app-configmap

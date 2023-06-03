@@ -10,6 +10,15 @@ kubectl delete -f manifest.yaml
 docker build -t igorpavlyushchik/users-application:1.0.0 ./
 docker push igorpavlyushchik/users-application:1.0.0
 
+# Generate secret values:
+~ $ echo -n 'users' | base64
+dXNlcnM=
+~ $ echo -n 'admin' | base64
+YWRtaW4=
+~ $ echo -n 'admin1234' | base64
+YWRtaW4xMjM0
+
+
 Comment for sub-task 3: Persistent volumes
 checkout branch module2_k8s_st3
 

@@ -6,6 +6,8 @@ kubectl apply -f manifest.yaml
 and make some API calls from below
 kubectl delete -f manifest.yaml
 
+kubectl port-forward pod/usersdb-pod-0 5432:5432 -n=k8s-program - to get access to db from local env
+
 # For info:
 docker build -t igorpavlyushchik/users-application:1.0.0 ./
 docker push igorpavlyushchik/users-application:1.0.0

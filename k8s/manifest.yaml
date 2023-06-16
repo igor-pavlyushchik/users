@@ -31,17 +31,34 @@ items:
   - apiVersion: v1
     kind: ConfigMap
     metadata:
-      name: db-secret-credentials
+      name: user-database-configmap
       namespace: k8s-program
       labels:
-        app: usersdb-pod
+        app: user-database-configmap
     data:
-      # User DB
-      POSTGRES_DB: "users"
-      # Db user
-      POSTGRES_USER: "admin"
-      # Db password
-      POSTGRES_PASSWORD: "admin1234"
+      init.sql: |
+        CREATE TABLE IF NOT EXISTS public.user_item
+        (
+        id integer NOT NULL,
+        "amount-of-posts" integer DEFAULT 0,
+        user_name character varying(255) COLLATE pg_catalog."default",
+        CONSTRAINT user_item_pkey PRIMARY KEY (id)
+        )
+        
+        TABLESPACE pg_default;
+        
+        ALTER TABLE public.user_item
+        OWNER to admin;
+
+        CREATE SEQUENCE public.user_item_seq
+        INCREMENT 50
+        START 1
+        MINVALUE 1
+        MAXVALUE 9223372036854775807
+        CACHE 1;
+      
+        ALTER SEQUENCE public.user_item_seq
+        OWNER TO admin;
   - apiVersion: v1
     kind: Secret
     metadata:
@@ -81,6 +98,8 @@ items:
               ports:
               - containerPort: 5432
               envFrom:
+                - configMapRef:
+                      name: user-database-configmap
                 - secretRef:
                     name: users-db-secret
               volumeMounts:
@@ -88,21 +107,25 @@ items:
                   name: pvc-users-storage
               startupProbe:
                 exec:
-                  command: [ "psql", "-U", "admin", "-d", "users", "-c", "SELECT 1" ]
-                initialDelaySeconds: 15
-                timeoutSeconds: 2
-                failureThreshold: 3
-                periodSeconds: 5
+                  command:
+                    - /bin/sh
+                    - -c
+                    - pg_isready -h localhost -U admin
+                failureThreshold: 30
+                periodSeconds: 10
               readinessProbe:
-                exec:
-                  command: ["psql", "-U", "admin", "-d", "users", "-c", "SELECT 1" ]
-                initialDelaySeconds: 15
-                timeoutSeconds: 2
+                tcpSocket:
+                  port: 5432
+                initialDelaySeconds: 10
+                periodSeconds: 5
               livenessProbe:
                 exec:
-                  command: ["psql", "-U", "admin", "-d", "users", "-c", "SELECT 1" ]
-                initialDelaySeconds: 45
-                timeoutSeconds: 2
+                  command:
+                    - /bin/sh
+                    - -c
+                    - pg_isready -h localhost -U admin
+                initialDelaySeconds: 15
+                periodSeconds: 10
 # it's needed when there is no PVC defined.
       volumeClaimTemplates:
         - metadata:

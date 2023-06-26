@@ -1,0 +1,4 @@
+replicaCountDb: 1
+replicaCountApp: 1
+
+namespace: k8s-program

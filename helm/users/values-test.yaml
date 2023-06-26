@@ -1,0 +1,5 @@
+## file for helm install with the not default values.
+replicaCountDb: 1
+replicaCountApp: 2
+
+namespace: k8s-program-test

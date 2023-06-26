@@ -8,6 +8,14 @@ kubectl delete -f manifest.yaml
 
 kubectl port-forward pod/usersdb-pod-0 5432:5432 -n=k8s-program - to get access to db from local env
 
+# To play with helm for users server:
+helm CLI from helm dir:
+helm install users ./users
+helm get manifest users     // retrieve the release and see the actual template that was loaded
+helm uninstall users
+// To install using not default values file:
+helm install --values ./users/values-test.yaml  users ./users
+
 # For info:
 docker build -t igorpavlyushchik/users-application:1.0.0 ./
 docker push igorpavlyushchik/users-application:1.0.0
